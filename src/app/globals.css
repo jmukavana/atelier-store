@@ -1,26 +1,199 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+  --radius-4xl: 2px;
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Palette: warm, low-saturation neutrals (paper / ink) with a single
+ * restrained accent (oxblood) reserved for price emphasis, sale states
+ * and focus rings — never for large surfaces. Radius is 0 everywhere;
+ * the architectural, hairline-bordered rectangle is the signature shape.
+ */
+:root {
+  --background: #f7f5f0;
+  --foreground: #17130f;
+  --card: #ffffff;
+  --card-foreground: #17130f;
+  --popover: #ffffff;
+  --popover-foreground: #17130f;
+  --primary: #17130f;
+  --primary-foreground: #f7f5f0;
+  --secondary: #ede8de;
+  --secondary-foreground: #17130f;
+  --muted: #efebe2;
+  --muted-foreground: #83796c;
+  --accent: #6e2a22;
+  --accent-foreground: #f7f5f0;
+  --destructive: #b3261e;
+  --border: #e2dccf;
+  --input: #e2dccf;
+  --ring: #17130f;
+  --radius: 0px;
+  --sidebar: #f7f5f0;
+  --sidebar-foreground: #17130f;
+  --sidebar-primary: #17130f;
+  --sidebar-primary-foreground: #f7f5f0;
+  --sidebar-accent: #ede8de;
+  --sidebar-accent-foreground: #17130f;
+  --sidebar-border: #e2dccf;
+  --sidebar-ring: #17130f;
+  --font-mono: ui-monospace, monospace;
+}
+
+.dark {
+  --background: #14110d;
+  --foreground: #f3efe6;
+  --card: #1c1812;
+  --card-foreground: #f3efe6;
+  --popover: #1c1812;
+  --popover-foreground: #f3efe6;
+  --primary: #f3efe6;
+  --primary-foreground: #14110d;
+  --secondary: #292319;
+  --secondary-foreground: #f3efe6;
+  --muted: #241f18;
+  --muted-foreground: #a89e8d;
+  --accent: #b0574a;
+  --accent-foreground: #14110d;
+  --destructive: #e5534b;
+  --border: rgba(243, 239, 230, 0.12);
+  --input: rgba(243, 239, 230, 0.12);
+  --ring: #f3efe6;
+  --sidebar: #14110d;
+  --sidebar-foreground: #f3efe6;
+  --sidebar-primary: #f3efe6;
+  --sidebar-primary-foreground: #14110d;
+  --sidebar-accent: #292319;
+  --sidebar-accent-foreground: #f3efe6;
+  --sidebar-border: rgba(243, 239, 230, 0.12);
+  --sidebar-ring: #f3efe6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Page shell: consistent editorial gutters, wide max width. */
+  .shell {
+    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12;
+  }
+
+  /* Small tracked uppercase label used for nav, categories, meta text. */
+  .label-tracked {
+    @apply text-[11px] font-medium tracking-[0.14em] uppercase;
+  }
+
+  /* Signature interaction: hairline underline that grows from the left. */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-editorial);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Full-bleed placeholder used in place of real product photography. */
+  .plate {
+    @apply relative flex items-center justify-center overflow-hidden bg-secondary;
+  }
+  .plate::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--secondary), var(--foreground) 4%) 0%,
+      var(--secondary) 55%,
+      color-mix(in oklab, var(--secondary), var(--background) 60%) 100%
+    );
+  }
+  .plate-mark {
+    @apply relative font-heading italic text-foreground/25 select-none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

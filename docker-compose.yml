@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: atelier
+      POSTGRES_PASSWORD: atelier
+      POSTGRES_DB: atelier_store
+    volumes:
+      - atelier_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atelier -d atelier_store"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # No host port published on purpose — only `backend` needs to reach
+    # this, over the compose network, and the host machine may already
+    # have its own Postgres on 5432. Use `docker compose exec db psql -U
+    # atelier atelier_store` for a shell if you need one.
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://atelier:atelier@db:5432/atelier_store
+      # Optional — unset (the default) falls back to an instant "demo
+      # payment", no Stripe involved. Set a test-mode secret key
+      # (sk_test_...) in a root .env file to enable the real redirect
+      # flow: `STRIPE_SECRET_KEY=sk_test_... docker compose up` works too.
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      args:
+        # Baked into the browser bundle — must be the address the
+        # *visitor's browser* can reach, i.e. the published host port.
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    environment:
+      # Used server-side only (SSR/server components). The frontend
+      # container can't reach the backend via "localhost" — it has to go
+      # over the compose network by service name instead.
+      API_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  atelier_pgdata:
